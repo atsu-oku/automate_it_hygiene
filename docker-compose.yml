@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  eset-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: eset-manager:latest
+    container_name: eset-manager
+    restart: unless-stopped
+
+    # Environment variables
+    environment:
+      - NODE_ENV=production
+      - TZ=Asia/Tokyo
+
+    # Volumes
+    volumes:
+      # Configuration file
+      - ./config/eset-manager-config.json:/etc/eset-manager/config.json:ro
+
+      # Logs (persistent)
+      - eset-manager-logs:/var/log/eset-manager
+
+      # Optional: Custom CA certificates
+      # - ./certs/ca.crt:/etc/ssl/certs/ca.crt:ro
+
+    # Network
+    networks:
+      - eset-network
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+    # Security
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('healthy')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Command (override for different operations)
+    # Uncomment and modify as needed:
+    # command: ["node", "dist/features/eset-cli.js", "health", "check", "--notify"]
+
+  # Optional: Scheduler for periodic health checks
+  eset-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: eset-manager:latest
+    container_name: eset-scheduler
+    restart: unless-stopped
+
+    environment:
+      - NODE_ENV=production
+      - TZ=Asia/Tokyo
+
+    volumes:
+      - ./config/eset-manager-config.json:/etc/eset-manager/config.json:ro
+      - eset-manager-logs:/var/log/eset-manager
+
+    networks:
+      - eset-network
+
+    # Run health check every hour with notifications
+    command: >
+      sh -c "while true; do
+        node dist/features/eset-cli.js health check --config /etc/eset-manager/config.json --notify;
+        sleep 3600;
+      done"
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  eset-network:
+    driver: bridge
+
+volumes:
+  eset-manager-logs:
+    driver: local

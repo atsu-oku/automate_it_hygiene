@@ -108,6 +108,13 @@ export ESET_PORT="2223"
 export ESET_USERNAME="Administrator"
 export ESET_PASSWORD="your_password"
 
+# AD認証の場合（以下のいずれかの方法で指定）
+export ESET_DOMAIN="CONTOSO"              # 方法1: ドメイン名を別途指定
+# または
+export ESET_USERNAME="CONTOSO\\admin"     # 方法2: DOMAIN\\username形式
+# または
+export ESET_USERNAME="admin@contoso.com"  # 方法3: UPN形式
+
 # オプション項目
 export ESET_VERIFY_SSL="false"    # 自己署名証明書の場合
 export ESET_USE_HTTP="true"       # HTTPを使用する場合
@@ -142,7 +149,8 @@ python3 eset_manager.py info --csv computers.csv
 {
     "host": "eset-server.example.com",
     "port": 2223,
-    "username": "Administrator",
+    "domain": "CONTOSO",
+    "username": "admin",
     "password": "your_password",
     "verify_ssl": false,
     "use_http": true,
@@ -164,6 +172,7 @@ chmod 600 ~/.config/eset_manager/config.json
 | ポート | `ESET_PORT` | `port` | `2223` | APIポート |
 | ユーザー名 | `ESET_USERNAME` | `username` | (必須) | 管理者ユーザー名 |
 | パスワード | `ESET_PASSWORD` | `password` | (必須) | パスワード |
+| ドメイン | `ESET_DOMAIN` | `domain` | (空) | ADドメイン名（AD認証時） |
 | SSL検証 | `ESET_VERIFY_SSL` | `verify_ssl` | `true` | SSL証明書を検証するか |
 | HTTP使用 | `ESET_USE_HTTP` | `use_http` | `false` | HTTPSの代わりにHTTPを使用 |
 | タイムアウト | `ESET_TIMEOUT` | `timeout` | `30` | リクエストタイムアウト（秒） |

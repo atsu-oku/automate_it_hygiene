@@ -46,3 +46,4 @@ coverage/
 
 # Generated examples
 examples/output/
+__pycache__/

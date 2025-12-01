@@ -83,6 +83,7 @@ def load_config(config_file: Optional[Path] = None) -> Dict[str, Any]:
         "port": int(os.getenv("ESET_PORT", "2223")),
         "username": os.getenv("ESET_USERNAME", ""),
         "password": os.getenv("ESET_PASSWORD", ""),
+        "domain": os.getenv("ESET_DOMAIN", ""),  # AD domain name
         "verify_ssl": os.getenv("ESET_VERIFY_SSL", "true").lower() in ("true", "1", "yes"),
         "use_http": os.getenv("ESET_USE_HTTP", "false").lower() in ("true", "1", "yes"),
         "timeout": int(os.getenv("ESET_TIMEOUT", str(DEFAULT_TIMEOUT))),
@@ -98,7 +99,7 @@ def load_config(config_file: Optional[Path] = None) -> Dict[str, Any]:
             with open(config_file, "r", encoding="utf-8") as f:
                 file_config = json.load(f)
                 # File config overrides env vars (except if empty)
-                for key in ["host", "username", "password"]:
+                for key in ["host", "username", "password", "domain"]:
                     if file_config.get(key):
                         config[key] = file_config[key]
                 for key in ["port", "verify_ssl", "use_http", "timeout", "retries"]:
@@ -191,14 +192,30 @@ class ESETAPIClient:
             raise
 
     def login(self) -> bool:
-        """Authenticate and get session token."""
+        """Authenticate and get session token.
+
+        Supports both local and AD (domain) authentication:
+        - Local: Set username/password only
+        - AD: Set domain + username + password (or use DOMAIN\\username format)
+        """
+        # Determine if this is AD authentication
+        domain = self.config.get("domain", "")
+        username = self.config["username"]
+        is_domain_user = bool(domain) or "\\" in username or "@" in username
+
+        # If domain is specified separately, prepend it to username
+        if domain and "\\" not in username and "@" not in username:
+            username = f"{domain}\\{username}"
+
+        self.logger.debug(f"Authentication mode: {'AD/Domain' if is_domain_user else 'Local'}")
+
         try:
             result = self._rpc_call(
                 f"{API_SESSION}.RpcAuthLoginRequest",
                 {
-                    "username": self.config["username"],
+                    "username": username,
                     "password": self.config["password"],
-                    "isDomainUser": False,
+                    "isDomainUser": is_domain_user,
                     "locale": "en-US",
                 }
             )
