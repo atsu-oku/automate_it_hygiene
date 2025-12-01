@@ -231,7 +231,7 @@ Refactoring Results
 
    所見: ネストしたループをハッシュマップに置き換えた。
    O(n²) → O(n) となり、1000件のデータで約100倍速くなる。
-   毒の効き目は配合次第というわけだ。
+   薬の効き目は配合次第というわけだ。
 
 ✨ Improvement 2: Memoization (Impact: 8/10)
    ...
@@ -473,7 +473,7 @@ MIT License - 詳細は[LICENSE](LICENSE)を参照。
 - Email: support@techsapo.com
 - ドキュメント: [techsapo.com/docs](https://techsapo.com/docs)
 
-困ったことがあれば遠慮なく聞くといい。私も暇ではないが、毒と薬の見分け方くらいなら教えてやれる。
+困ったことがあれば遠慮なく聞くといい。私も暇ではないが、薬の調合くらいなら教えてやれる。
 
 ---
 

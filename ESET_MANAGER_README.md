@@ -49,7 +49,7 @@
 
 ### dry-run機能
 
-実際のAPI呼び出しを行わずに動作確認できる。本番環境で実行する前に必ずdry-runで確認することを推奨する。毒薬を処方する前に効能を確認するのは当然のことだ。
+実際のAPI呼び出しを行わずに動作確認できる。本番環境で実行する前に必ずdry-runで確認することを推奨する。薬を処方する前に効能を確認するのは当然のことだ。
 
 ```bash
 # dry-runモード（実際には何も実行しない）
@@ -584,4 +584,4 @@ MIT License
 - [ESET PROTECT On-Prem 11.1 API Examples](https://help.eset.com/protect_install/11.1/api_examples/)
 - [ClientTaskConfiguration_Type Enum](https://help.eset.com/protect_install/12.1/api/Era/Common/DataDefinition/Task/ClientTaskConfiguration_Type.html)
 
-何かわからないことがあれば、これらのドキュメントを参照するといい。それでもわからなければ、GitHubのIssuesで聞くがよい。私も暇ではないが、毒の調合法くらいなら教えてやれる。
+何かわからないことがあれば、これらのドキュメントを参照するといい。それでもわからなければ、GitHubのIssuesで聞くがよい。私も暇ではないが、薬の調合くらいなら教えてやれる。
